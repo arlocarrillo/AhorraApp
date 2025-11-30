@@ -1,13 +1,12 @@
 import React from 'react';
 import { Text, StyleSheet, View } from 'react-native';
 
-export default function GraficasScreen() {
+export default function PresupuestosScreen() {
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Análisis de Saldo</Text>
-            <Text style={styles.subtitle}>Aquí irán tus gráficas y estadísticas.</Text>
+            <Text style={styles.title}>MIS PRESUPUESTOS</Text>
             <View style={styles.chartPlaceholder}>
-                <Text style={{ color: '#fff' }}>[Espacio para Gráfico Circular/Barras]</Text>
+                <Text style={{ color: '#fff' }}>[Espacio para sliders]</Text>
             </View>
         </View>
     );
@@ -26,11 +25,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 10,
         color: '#510390ff',
-    },
-    subtitle: {
-        fontSize: 18,
-        marginBottom: 30,
-        color: '#777',
     },
     chartPlaceholder: {
         width: '90%',

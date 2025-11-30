@@ -1,32 +1,34 @@
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import HomeScreen from './Screens/HomeScreen';
 import IngresosScreen from './Screens/IngresosScreen';
 import EgresosScreen from './Screens/EgresosScreen';
 import PerfilScreen from './Screens/PerfilScreen';
-import GraficasScreen from './Screens/GraficasScreen';
+import GraficasScreen from './Screens/GraficasScreen'; 
+import PresupuestosScreen from './Screens/PresupuestosScreens';
 
 const Tab = createBottomTabNavigator();
-
-export default function App() {
-  return (
-    <NavigationContainer>
+const Stack = createStackNavigator(); 
+function TabRoutes() {
+    return (
       <Tab.Navigator
-        initialRouteName='HomeScreen'
+        initialRouteName='Home' 
         screenOptions={({ route }) => ({
           headerShown: false,
           tabBarIcon: ({ color, size }) => {
             let iconName;
 
-            if (route.name === 'HomeScreen') {
+            if (route.name === 'Home') {
               iconName = 'home';
-            } else if (route.name === 'IngresosScreen') {
+            } else if (route.name === 'Ingresos') {
               iconName = 'cash';
-            } else if (route.name === 'EgresosScreen') {
+            } else if (route.name === 'Egresos') {
               iconName = 'card';
-            } else if (route.name === 'PerfilScreen') {
+            } else if (route.name === 'Perfil') {
               iconName = 'person-outline';
             }
 
@@ -38,21 +40,30 @@ export default function App() {
             paddingBottom: 5,
             height: 60,
           },
-        })}
-      >
-        <Tab.Screen name="HomeScreen" component={HomeScreen} options={{ title: 'Inicio' }} />
-        <Tab.Screen name="IngresosScreen" component={IngresosScreen} options={{ title: 'Ingresos' }} />
-        <Tab.Screen name="EgresosScreen" component={EgresosScreen} options={{ title: 'Egresos' }} />
-        <Tab.Screen name="PerfilScreen" component={PerfilScreen} options={{ title: 'Perfil' }} />
-        <Tab.Screen 
-          name="GraficasScreen" 
-          component={GraficasScreen} 
-          options={{ 
-            tabBarButton: () => null,
-            headerShown: false,
-          }} 
-        />
-      </Tab.Navigator>
-    </NavigationContainer>
-  );
+          })}
+        >
+          <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'Inicio' }} />
+          <Tab.Screen name="Ingresos" component={IngresosScreen} options={{ title: 'Ingresos' }} />
+          <Tab.Screen name="Egresos" component={EgresosScreen} options={{ title: 'Egresos' }} />
+          <Tab.Screen name="Perfil" component={PerfilScreen} options={{ title: 'Perfil' }} />
+        </Tab.Navigator>
+    );
+}
+
+export default function App() {
+    return (
+        <NavigationContainer>
+            <Stack.Navigator 
+                initialRouteName="TabRoutes"
+                screenOptions={{ 
+                    headerShown: false,
+                }}
+            >
+
+              <Stack.Screen name="TabRoutes" component={TabRoutes} />
+              <Stack.Screen name="GraficasScreen" component={GraficasScreen} />
+              <Stack.Screen name="PresupuestosScreen" component={PresupuestosScreen} />
+            </Stack.Navigator>
+        </NavigationContainer>
+    );
 }

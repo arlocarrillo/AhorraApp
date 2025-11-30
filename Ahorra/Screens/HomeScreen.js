@@ -19,6 +19,9 @@ export default function HomeScreen({navigation}) {
     const navigateToGraficas = () => {
         navigation.navigate('GraficasScreen');
     };
+    const navigateToPresupuestos = ()=>{
+        navigation.navigate('PresupuestosScreen');
+    };
     const handleSavePago = () => {
         console.log("Guardando Pago:", { concepto, fecha, monto });
         setConcepto('');
@@ -51,6 +54,9 @@ export default function HomeScreen({navigation}) {
             </Pressable>
             <Pressable style={styles.actionButton} onPress={()=> setModalMovimientos('movimientos')}>
                 <Text style={styles.textButton}>Movimientos</Text>
+            </Pressable>
+            <Pressable style={styles.actionButton} onPress={navigateToPresupuestos}>
+                <Text style={styles.textButton}>Mis Presupuestos</Text>
             </Pressable>
             <Pressable style={styles.balanceButton} onPress={navigateToGraficas}>
                 <Text style={styles.balanceText}>Saldo: $15,000</Text>
