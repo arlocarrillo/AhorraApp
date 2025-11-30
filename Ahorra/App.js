@@ -4,6 +4,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
+import AutenticacionScreen from './Screens/AutenticacionScreen';
+import InicioSeScreen from './Screens/InicioSeScreen';
+import RegistroScreen from './Screens/RegistroScreen';
 import HomeScreen from './Screens/HomeScreen';
 import IngresosScreen from './Screens/IngresosScreen';
 import EgresosScreen from './Screens/EgresosScreen';
@@ -54,15 +57,19 @@ export default function App() {
     return (
         <NavigationContainer>
             <Stack.Navigator 
-                initialRouteName="TabRoutes"
+                initialRouteName="AutenticacionScreen"
                 screenOptions={{ 
                     headerShown: false,
                 }}
             >
+              <Stack.Screen name="AutenticacionScreen" component={AutenticacionScreen} />
+              <Stack.Screen name="InicioSeScreen" component={InicioSeScreen} />
+              <Stack.Screen name="RegistroScreen" component={RegistroScreen} />
 
               <Stack.Screen name="TabRoutes" component={TabRoutes} />
               <Stack.Screen name="GraficasScreen" component={GraficasScreen} />
               <Stack.Screen name="PresupuestosScreen" component={PresupuestosScreen} />
+              
             </Stack.Navigator>
         </NavigationContainer>
     );
