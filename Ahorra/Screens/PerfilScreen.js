@@ -1,6 +1,9 @@
 import { Text, StyleSheet, View, Pressable } from 'react-native'
 
 export default function PerfilScreen({navigation}) {
+    const navigateToPresupuestos = ()=>{
+        navigation.navigate('PresupuestosScreen');
+    };
     return (
       <View style={styles.container}>
         <Text style={styles.title}>Perfil</Text>
@@ -8,7 +11,7 @@ export default function PerfilScreen({navigation}) {
             <Text style={styles.datos}>Nombre: </Text>
             <Text style={styles.datos}>Correo Electrónico: </Text>
             <Text style={styles.datos}>Teléfono: </Text>
-            <Pressable style={styles.actionButton}>
+            <Pressable style={styles.actionButton} onPress={navigateToPresupuestos}>
                 <Text style={styles.textButton}>Mis presupuestos</Text>
             </Pressable>
         </View>
