@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, StyleSheet, View, Pressable, Modal, TextInput, ScrollView, FlatList } from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import UsuarioController from '../controllers/UsuarioController';
 
 const lastTransactions = [
     { id: '1', concept: 'Salario Noviembre', amount: 35000.00, type: 'Ingreso' },
@@ -10,6 +11,14 @@ const lastTransactions = [
 ];
 
 export default function HomeScreen({navigation}) {
+    const [userData, setUserData] = useState({nombre:''})
+    useEffect(()=>{
+        const user =UsuarioController.getCurrentUser();
+        if(user){
+            setUserData(user);
+        }
+    },[]);
+
     const [modalPago, setModalPago] = useState(false);
     const [modalMovimientos, setModalMovimientos] = useState(false);
 
@@ -46,7 +55,7 @@ export default function HomeScreen({navigation}) {
     return (
       <View style={styles.container}>
         <Text style={styles.title}>Bienvenid@</Text>
-        <Text style={styles.username}>Arlo</Text>
+        <Text style={styles.username}>{userData.nombre}</Text>
 
         <View style={styles.menu}>
             <Pressable style={styles.actionButton} onPress={()=> setModalPago('pago')}>

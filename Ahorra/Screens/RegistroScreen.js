@@ -1,13 +1,33 @@
 import React, {useState} from 'react';
 import { View, Text, StyleSheet, TextInput, ScrollView, Pressable, Alert } from 'react-native';
+import UsuarioController from '../controllers/UsuarioController';
 
-export default function RegistroScreen() {
+export default function RegistroScreen({navigation}) {
     const [nombre, setNombre] = useState('');
     const [email, setEmail] = useState('');
     const [telefono, setTelefono] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const mostrarAlerta = () => {
+    const handleRegistro =async ()=>{
+        const respuesta = await UsuarioController.registrarUsuario(
+            nombre,
+            email,
+            telefono,
+            password,
+            confirmPassword
+        );
+        if (respuesta.success) {
+            Alert.alert('Éxito', respuesta.message, [
+                { text: "OK", onPress: () => {
+                    setNombre(''); setEmail(''); setTelefono(''); setPassword(''); setConfirmPassword('');
+                    navigation.navigate('InicioSeScreen'); 
+                } }
+            ]);
+        } else {
+            Alert.alert('Error', respuesta.error);
+        }
+    }
+    /*const mostrarAlerta = () => {
         if(nombre === '' || password === '' || email === '' || telefono === '' || confirmPassword === ''){
             Alert.alert('Error', 'Por favor, complete todos los campos.');
             //alert('Error', 'Por favor, complete todos los campos.');
@@ -27,7 +47,7 @@ export default function RegistroScreen() {
             Alert.alert('Error', 'Nombre o contraseña incorrectos.');
             //alert('Error', 'Nombre o contraseña incorrectos.');
         }
-    }
+    }*/
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Registro</Text>
@@ -76,7 +96,7 @@ export default function RegistroScreen() {
                     onChangeText={setConfirmPassword}
                 />
             </ScrollView>
-            <Pressable style={styles.actionButton} onPress={mostrarAlerta}>
+            <Pressable style={styles.actionButton} onPress={handleRegistro}>
                 <Text style={styles.textButton}>Registrarse</Text>
             </Pressable>
         </View>

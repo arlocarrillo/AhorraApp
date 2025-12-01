@@ -1,10 +1,25 @@
 import { View, Text, StyleSheet, Alert, ScrollView, TextInput, Pressable } from 'react-native';
 import React, {useState} from 'react';
+import UsuarioController from '../controllers/UsuarioController';
 
-export default function InicioSeScreen() {
-    const [nombre, setNombre] = useState('');
+export default function InicioSeScreen({navigation}) {
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const mostrarAlerta = () => {
+    const handleLogin = async ()=>{
+        if (email.trim()==='' || password.trim()===''){
+            Alert.alert('Error', 'Por favor, complete todos los campos.')
+        }
+        const respuesta= await UsuarioController.iniciarSesion(email.trim(), password.trim());
+        if (respuesta.success){
+            Alert.alert('Exito', 'Inicio de sesión exitoso.');
+            setEmail('');
+            setPassword('');
+            navigation.replace('TabRoutes', { screen: 'Home' });
+        }else{
+            Alert.alert('Error', respuesta.error)
+        }
+    }
+    /*const mostrarAlerta = () => {
         if(nombre === '' || password === ''){
             Alert.alert('Error', 'Por favor, complete todos los campos.');
             //alert('Error', 'Por favor, complete todos los campos.');
@@ -21,17 +36,18 @@ export default function InicioSeScreen() {
             Alert.alert('Error', 'Nombre o contraseña incorrectos.');
             //alert('Error', 'Nombre o contraseña incorrectos.');
         }
-    }
+    }*/
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Iniciar Sesión</Text>
             <ScrollView contentContainerStyle={styles.formContent}>
-                <Text style={styles.formLabel}>Nombre</Text>
+                <Text style={styles.formLabel}>Correo Electrónico</Text>
                 <TextInput 
                     style={styles.input} 
-                    placeholder="Introduce tu nombre" 
-                    value={nombre}
-                    onChangeText={setNombre}
+                    placeholder="Introduce tu email"
+                    keyboardType='email-address'
+                    value={email}
+                    onChangeText={setEmail}
                 />
                                     
                 <Text style={styles.formLabel}>Contraseña</Text>
@@ -43,7 +59,7 @@ export default function InicioSeScreen() {
                     onChangeText={setPassword}
                 />
             </ScrollView>
-            <Pressable style={styles.actionButton} onPress={mostrarAlerta}>
+            <Pressable style={styles.actionButton} onPress={handleLogin}>
                 <Text style={styles.textButton}>Iniciar Sesión</Text>
             </Pressable>
         </View>

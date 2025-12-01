@@ -1,8 +1,11 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { StyleSheet, ActivityIndicator, View, Text } from 'react-native';
+
+import DatabaseService from './database/DatabaseService';
 
 import AutenticacionScreen from './Screens/AutenticacionScreen';
 import InicioSeScreen from './Screens/InicioSeScreen';
@@ -54,6 +57,24 @@ function TabRoutes() {
 }
 
 export default function App() {
+  const [dbReady, setDbReady] = useState(false);
+  useEffect(() => {
+        const init = async () => {
+            console.log("Iniciando Base de Datos...");
+            await DatabaseService.initialize();
+            setDbReady(true); // Una vez que termina, cambiamos el estado
+            console.log("Base de Datos lista.");
+        };
+        init();
+    }, []);
+    if (!dbReady) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#510390ff" />
+                <Text style={{ marginTop: 10 }}>Cargando datos de la aplicación...</Text>
+            </View>
+        );
+    }
     return (
         <NavigationContainer>
             <Stack.Navigator 
@@ -74,3 +95,11 @@ export default function App() {
         </NavigationContainer>
     );
 }
+const styles = StyleSheet.create({
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#ffffffff',
+    }
+});
