@@ -42,6 +42,50 @@ class TransactionController {
             return { success: false, error: 'Error al eliminar la transacción.' };
         }
     }
+
+    async getFinancialSummary(){
+        const user=UsuarioController.getCurrentUser();
+        if (!user){
+            return {success:false, summary:null, error:"Usuario no identificado"};
+        }
+        const result = await TransactionModel.getAll(user.id);
+        if (result.success){
+            let totalIncome = 0;
+            let totalExpense= 0;
+            const monthlyData = {};
+            result.transactions.forEach(t => {
+                const amount = t.amount;
+                if (t.isIncome === 1){
+                    totalIncome += amount;
+                }else{
+                    totalExpense+=amount;
+                }
+            });
+
+            const balance= totalIncome-totalExpense;
+            return{
+                success:true,
+                summary:{
+                    totalIncome,
+                    totalExpense,
+                    balance,
+                }
+            };
+        }else{
+            return {success:false,summary:null,error:'Error al cargar resumen financiero'}
+        }
+    }
+
+    async getLastTransactions(limit = 10) {
+        const user = UsuarioController.getCurrentUser();
+        if (!user) return { success: false, transactions: [], error: 'Usuario no autenticado.' };
+        const result = await TransactionModel.getAll(user.id, limit); 
+        if (result.success) {
+            return { success: true, transactions: result.transactions };
+        } else {
+            return { success: false, transactions: [], error: 'Error al cargar los últimos movimientos.' };
+        }
+    }
 }
 
 export default new TransactionController();

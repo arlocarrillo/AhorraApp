@@ -1,23 +1,55 @@
-import React, { useState, useEffect } from 'react';
-import { Text, StyleSheet, View, Pressable, Modal, TextInput, ScrollView, FlatList } from 'react-native'
+import React, { useState, useCallback } from 'react';
+import { Text, StyleSheet, View, Pressable, Modal, TextInput, ScrollView, FlatList, ActivityIndicator } from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import UsuarioController from '../controllers/UsuarioController';
+import TransactionController from '../controllers/TransactionController';
+import {useFocusEffect} from '@react-navigation/native';
 
-const lastTransactions = [
+/*const lastTransactions = [
     { id: '1', concept: 'Salario Noviembre', amount: 35000.00, type: 'Ingreso' },
     { id: '2', concept: 'Supermercado', amount: 1500.00, type: 'Egreso' },
     { id: '3', concept: 'Renta', amount: 7000.00, type: 'Egreso' },
     { id: '4', concept: 'Venta de artículo', amount: 500.00, type: 'Ingreso' },
-];
+];*/
 
 export default function HomeScreen({navigation}) {
-    const [userData, setUserData] = useState({nombre:''})
-    useEffect(()=>{
+    const [userData, setUserData] = useState({nombre:''});
+    const [balance, setBalance] = useState(0);
+
+    const [latestMovements, setLatestMovements] = useState([]);
+    const [isLoadingMovements, setIsLoadingMovements] = useState(false);
+
+    const loadData = useCallback(async()=>{
         const user =UsuarioController.getCurrentUser();
         if(user){
             setUserData(user);
+            const summaryResult = await TransactionController.getFinancialSummary();
+            if (summaryResult.success && summaryResult.summary) {
+                setBalance(summaryResult.summary.balance);
+            } else {
+                console.error("Error al cargar el resumen:", summaryResult.error);
+                setBalance(0);
+            }
         }
     },[]);
+
+    const fetchLatestMovements = useCallback(async ()=>{
+        setIsLoadingMovements(true);
+        const result = await TransactionController.getLastTransactions(10);
+        if(result.success){
+            setLatestMovements(result.transactions);
+        }else{
+            console.error('Error al cargar movimientos.', result.error);
+        }
+        setIsLoadingMovements(false);
+    })
+
+    useFocusEffect(
+    useCallback(() => {
+        loadData();
+        return () => {};
+    }, [loadData])
+);
 
     const [modalPago, setModalPago] = useState(false);
     const [modalMovimientos, setModalMovimientos] = useState(false);
@@ -39,19 +71,26 @@ export default function HomeScreen({navigation}) {
         setModalPago(false);
     };
     const renderMovementItem = ({ item }) => {
-        const isIncome = item.type === 'Ingreso';
+        const isIncome = item.isIncome === 1;
         const color = isIncome ? '#4CAF50' : '#F44336';
+        const amountDisplay = (item.amount || 0).toFixed(2);
         return (
             <View style={styles.movementItem}>
                 <View style={styles.movementTextContainer}>
-                    <Text style={styles.movementConcept}>{item.concept}</Text>
+                    <Text style={styles.movementConcept}>{item.concepto}</Text>
                     <Text style={[styles.movementAmount, { color: color }]}>
-                        {isIncome ? '+' : '-'} ${item.amount.toFixed(2)}
+                        {isIncome ? '+' : '-'} ${amountDisplay}
                     </Text>
                 </View>
             </View>
         );
     };
+
+    const openMovementsModal =()=>{
+        fetchLatestMovements();
+        setModalMovimientos('movimientos')
+    }
+
     return (
       <View style={styles.container}>
         <Text style={styles.title}>Bienvenid@</Text>
@@ -61,14 +100,14 @@ export default function HomeScreen({navigation}) {
             <Pressable style={styles.actionButton} onPress={()=> setModalPago('pago')}>
                 <Text style={styles.textButton}> Programar Pago</Text>
             </Pressable>
-            <Pressable style={styles.actionButton} onPress={()=> setModalMovimientos('movimientos')}>
+            <Pressable style={styles.actionButton} onPress={openMovementsModal}>
                 <Text style={styles.textButton}>Movimientos</Text>
             </Pressable>
             <Pressable style={styles.actionButton} onPress={navigateToPresupuestos}>
                 <Text style={styles.textButton}>Mis Presupuestos</Text>
             </Pressable>
             <Pressable style={styles.balanceButton} onPress={navigateToGraficas}>
-                <Text style={styles.balanceText}>Saldo: $15,000</Text>
+                <Text style={styles.balanceText}>Saldo: {balance.toFixed(2)}</Text>
             </Pressable>
 
             <Modal
@@ -133,11 +172,18 @@ export default function HomeScreen({navigation}) {
                         <Text style={styles.modalTitle}>Últimos Movimientos</Text>
                     </View>
                     <View style={styles.movementListContainer}>
-                        <FlatList
-                            data={lastTransactions}
-                            renderItem={renderMovementItem}
-                            keyExtractor={item => item.id}
-                        />
+                        {isLoadingMovements ?(
+                        <ActivityIndicator size="large" color="#510390ff" style={{marginTop: 50}} />
+                        ) : (
+                            <FlatList
+                                data={latestMovements} 
+                                renderItem={renderMovementItem}
+                                keyExtractor={item => item.id.toString()} 
+                                ListEmptyComponent={() => (
+                                    <Text style={{textAlign: 'center', marginTop: 20, color: '#777'}}>No hay movimientos registrados.</Text>
+                                )}
+                            />
+                        )}
                     </View>
                     <Pressable style={styles.saveButton} onPress={()=> setModalMovimientos(false)}>
                         <Text style={styles.saveButtonText}>Cerrar</Text>

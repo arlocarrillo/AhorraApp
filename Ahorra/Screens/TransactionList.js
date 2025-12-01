@@ -1,5 +1,5 @@
 import React, {useState,useEffect,useCallback} from 'react';
-import { Text, StyleSheet, View, Pressable, ScrollView, FlatList } from 'react-native';
+import { Text, StyleSheet, View, Pressable, ScrollView, FlatList, Alert } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import TransactionController from '../controllers/TransactionController';
 import TransactionFormModal from './TransactionFormModal';
@@ -53,7 +53,7 @@ export default function TransactionList({ navigation, type }) {
                     onPress: async () => {
                         const result = await TransactionController.deleteTransaction(id);
                         if (result.success) {
-                            loadTransactions(); 
+                            loadTransaction(); 
                         } else {
                             Alert.alert("Error", result.error || "No se pudo eliminar la transacción.");
                         }
@@ -73,7 +73,7 @@ export default function TransactionList({ navigation, type }) {
             <View style={styles.conceptAmountContainer}>
                 <Text style={styles.conceptText}>{item.concept}</Text>
                 <Text style={[styles.amountText, { color: mainColor }]}>
-                    {isIncomeType ? '+' : '-'} ${item.amount.toFixed(2)}
+                    {isIncomeType ? '+' : '-'} ${(item.amount || 0).toFixed(2)}
                 </Text>
             </View>
             <Pressable 

@@ -2,7 +2,7 @@ import { Platform } from 'react-native';
 import DatabaseService from '../database/DatabaseService';
 
 class TransactionModel {
-    async getAll(userId) {
+    async getAll(userId, limit=null) {
         const db = DatabaseService.getDatabase();
         if (Platform.OS !== 'web' && !db) {
             console.error('ERROR: Base de datos no disponible para consulta.');
@@ -10,10 +10,14 @@ class TransactionModel {
         }
 
         try {
-            const results = await db.getAllAsync(
-                'SELECT * FROM transactions WHERE userId = ? ORDER BY id DESC;',
-                [userId]
-            );
+            let sql = 'SELECT * FROM transactions WHERE userId = ? ORDER BY id DESC';
+            const params = [userId];
+
+            if (limit !== null && typeof limit === 'number' && limit > 0) {
+                sql += ' LIMIT ?';
+                params.push(limit);
+            }
+            const results = await db.getAllAsync(sql, params);
             return { success: true, transactions: results };
         } catch (error) {
             console.error('Error al obtener transacciones:', error);
@@ -29,7 +33,7 @@ class TransactionModel {
 
         try {
             const result = await db.runAsync(
-                'INSERT INTO transactions (concepto, monto, isIncome, userId) VALUES (?, ?, ?, ?);',
+                'INSERT INTO transactions (concepto, amount, isIncome, userId) VALUES (?, ?, ?, ?);',
                 [concept, amount, isIncome ? 1 : 0, userId]
             );
             

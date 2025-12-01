@@ -29,7 +29,7 @@ class DatabaseService {
                 CREATE TABLE IF NOT EXISTS transactions (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     concepto TEXT NOT NULL,
-                    monto REAL NOT NULL,
+                    amount REAL NOT NULL,
                     isIncome INTEGER NOT NULL, -- 1 para Ingreso, 0 para Egreso
                     userId INTEGER,
                     FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
