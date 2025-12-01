@@ -22,18 +22,35 @@ export default function PerfilScreen({navigation}) {
     return (
       <View style={styles.container}>
         <Text style={styles.title}>Perfil</Text>
-        <View style={styles.container2}>
-            <Text style={styles.datos}>Nombre: {userData.nombre}</Text>
-            <Text style={styles.datos}>Correo Electrónico: {userData.email}</Text>
-            <Text style={styles.datos}>Teléfono: {userData.telefono}</Text>
+        <View style={styles.logoContainer}>
+            <Text style={styles.logoText}>A+</Text>
+        </View>
+        <View style={styles.dataCard}>
+            <View style={styles.dataRow}>
+                <Text style={styles.dataLabel}>Nombre:</Text>
+                <Text style={styles.dataValue}>{userData.nombre}</Text>
+            </View>
+
+            <View style={styles.dataRow}>
+                <Text style={styles.dataLabel}>Correo Electrónico:</Text>
+                <Text style={styles.dataValue}>{userData.email}</Text>
+            </View>
+
+            <View style={styles.dataRow}>
+                <Text style={styles.dataLabel}>Teléfono:</Text>
+                <Text style={styles.dataValue}>{userData.telefono}</Text>
+            </View>
+        </View>
+        
+        <View style={styles.buttonContainer}>
             <Pressable style={styles.actionButton} onPress={navigateToPresupuestos}>
-                <Text style={styles.textButton}>Mis presupuestos</Text>
+                <Text style={styles.textButton}>Mis Presupuestos</Text>
             </Pressable>
             <Pressable style={[styles.actionButton, styles.logoutButton]} onPress={handleLogout}>
                 <Text style={styles.textButton}>Cerrar Sesión</Text>
             </Pressable>
         </View>
-      </View>
+        </View>
     )
 }
 
@@ -65,16 +82,74 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
-    datos:{
-        fontSize: 18,
-        marginBottom: 10,
-        color: '#000000ff',
-    },
     title:{
         fontSize: 30,
         fontWeight: 'bold',
         marginBottom: 20,
         color: '#000000ff',
         paddingBottom: 50,
+    },
+    logoContainer: {
+        width: 150,
+        height: 150,
+        borderRadius: 75,
+        backgroundColor: '#510390ff',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: -50,
+    },
+    logoText: {
+        fontSize: 48,
+        fontWeight: 'bold',
+        color: '#ffffffff',
+    },
+    dataCard: {
+        width: '100%',
+        backgroundColor: '#FFFFFF',
+        borderRadius: 15,
+        padding: 20,
+        marginBottom: 30,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+        elevation: 8,
+    },
+    dataRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#EEEEEE',
+    },
+    dataLabel: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#666666',
+    },
+    dataValue: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333333',
+        maxWidth: '60%',
+        textAlign: 'right',
+    },
+    buttonContainer: {
+        width: '100%',
+        alignItems: 'center',
+    },
+    actionButton:{
+        width: '100%',
+        backgroundColor: '#510390ff',
+        paddingVertical: 15,
+        borderRadius: 10,
+        marginBottom: 20,
+        alignItems: 'center',
+        marginTop: 0,
+    },
+    logoutButton: {
+        backgroundColor: '#E53935',
+        marginTop: 20,
     },
 });

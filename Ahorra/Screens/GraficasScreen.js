@@ -77,7 +77,7 @@ export default function GraficasScreen() {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Análisis de Saldo</Text>
-            <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+            <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.contentContainer}>
                 <View style={styles.summaryCard}>
                     <Text style={styles.summaryTitle}>Balance General</Text>
                     <Text style={[styles.balanceText, { color: balanceColor }]}>
@@ -203,5 +203,9 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         elevation: 3,
         marginBottom: 20,
+    },
+    scrollContainer:{
+        flex:1,
+        width:'100%'
     }
 });
