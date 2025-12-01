@@ -1,26 +1,71 @@
-import React from 'react';
+import React, {useState,useEffect,useCallback} from 'react';
 import { Text, StyleSheet, View, Pressable, ScrollView, FlatList } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import TransactionController from '../controllers/TransactionController';
+import TransactionFormModal from './TransactionFormModal';
+import { useFocusEffect } from '@react-navigation/native';
 
-const dummyData = [
+/*const dummyData = [
     { id: '1', concept: 'Salario Noviembre', amount: 35000.00, isIncome: true },
     { id: '2', concept: 'Venta de artículo', amount: 500.00, isIncome: true },
     { id: '3', concept: 'Pago de Netflix', amount: 189.00, isIncome: false },
     { id: '4', concept: 'Supermercado', amount: 1500.00, isIncome: false },
-];
+];*/
 export default function TransactionList({ navigation, type }) {
-    const data = dummyData.filter(item => 
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [data,setData]=useState([]);
+    /*const data = dummyData.filter(item => 
         type === 'Ingresos' ? item.isIncome : !item.isIncome
-    );
+    );*/
 
     const mainColor = type === 'Ingresos' ? '#4CAF50' : '#F44336';
+    const isIncomeType = type === 'Ingresos';
+
+    const loadTransaction = useCallback(async ()=>{
+        const result= await TransactionController.getFilteredTransactions(type);
+        if (result.success){
+            setData(result.transactions);
+        }else{
+            Alert.alert('Error', result.error);
+        }
+    },[type]);
+
+    useFocusEffect(
+        useCallback(()=>{
+            loadTransaction();
+            return ()=>{}
+        },[loadTransaction])
+    );
     
     const handleAdd = () => {
-        alert(`Abrir modal de Agregar ${type}`);
+        setIsModalVisible(true);
     };
 
     const handleDelete = (id) => {
-        alert(`Eliminar transacción ${id}`);
+        Alert.alert(
+            "Confirmar Eliminación",
+            "¿Estás seguro de que deseas eliminar esta transacción?",
+            [
+                { text: "Cancelar", style: "cancel" },
+                { 
+                    text: "Eliminar", 
+                    style: "destructive", 
+                    onPress: async () => {
+                        const result = await TransactionController.deleteTransaction(id);
+                        if (result.success) {
+                            loadTransactions(); 
+                        } else {
+                            Alert.alert("Error", result.error || "No se pudo eliminar la transacción.");
+                        }
+                    }
+                }
+            ]
+        );
+    };
+
+    const handleSaveSuccess = () => {
+        setIsModalVisible(false);
+        loadTransaction();
     };
 
     const renderItem = ({ item }) => (
@@ -28,7 +73,7 @@ export default function TransactionList({ navigation, type }) {
             <View style={styles.conceptAmountContainer}>
                 <Text style={styles.conceptText}>{item.concept}</Text>
                 <Text style={[styles.amountText, { color: mainColor }]}>
-                    {item.isIncome ? '+' : '-'} ${item.amount.toFixed(2)}
+                    {isIncomeType ? '+' : '-'} ${item.amount.toFixed(2)}
                 </Text>
             </View>
             <Pressable 
@@ -42,6 +87,12 @@ export default function TransactionList({ navigation, type }) {
 
     return (
         <View style={styles.container}>
+            <TransactionFormModal
+                visible={isModalVisible}
+                onClose={() => setIsModalVisible(false)}
+                isIncomeType={isIncomeType}
+                onSaveSuccess={handleSaveSuccess}
+            />
             <View style={styles.header}>
                 <Text style={styles.title}>{type}</Text>
                 <View style={styles.headerButtons}>

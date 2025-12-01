@@ -25,6 +25,15 @@ class DatabaseService {
                     telefono TEXT UNIQUE NOT NULL,  
                     fechaCreacion DATETIME DEFAULT CURRENT_TIMESTAMP
                 );
+
+                CREATE TABLE IF NOT EXISTS transactions (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    concepto TEXT NOT NULL,
+                    monto REAL NOT NULL,
+                    isIncome INTEGER NOT NULL, -- 1 para Ingreso, 0 para Egreso
+                    userId INTEGER,
+                    FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+                );
             `);
             
             console.log('✅ Base de datos y tabla users inicializadas correctamente.');
